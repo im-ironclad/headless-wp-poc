@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { ViewTransition } from "react";
 import { BlockRenderer } from "@/components/blocks/block-renderer";
 import { getAllPagePaths, getPage } from "@/lib/cms";
 
@@ -24,5 +25,13 @@ export default async function CmsPage({ params }: PageProps<"/[[...slug]]">) {
   const page = await getPage(toPath((await params).slug));
   if (!page) notFound();
 
-  return <BlockRenderer blocks={page.blocks} showUnsupported={process.env.NODE_ENV !== "production"} />;
+  // Page transition: every Page shares this route, so the key makes each navigation an exit + enter pair.
+  // Next.js navigations are React Transitions, which is what activates <ViewTransition>. CSS: globals.css.
+  return (
+    <ViewTransition key={page.path} enter="page-enter" exit="page-exit" default="none">
+      <div>
+        <BlockRenderer blocks={page.blocks} showUnsupported={process.env.NODE_ENV !== "production"} />
+      </div>
+    </ViewTransition>
+  );
 }

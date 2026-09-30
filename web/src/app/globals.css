@@ -167,3 +167,75 @@
   background-size: 56px 56px;
   mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 20%, transparent 75%);
 }
+/*
+ * Page transitions: the browser's View Transitions API, driven by React's <ViewTransition>
+ * (see app/[[...slug]]/page.tsx). The old page leaves fast and upward; the new one arrives
+ * a beat later, rising gently. The header stays put.
+ */
+::view-transition {
+  pointer-events: none; /* clicks during the animation reach the live page */
+}
+
+::view-transition-old(.page-exit) {
+  --vt-offset: -12px;
+  animation:
+    160ms ease-in both vt-fade reverse,
+    160ms ease-in both vt-shift reverse;
+}
+
+::view-transition-new(.page-enter) {
+  --vt-offset: 16px;
+  animation:
+    260ms ease-out 120ms both vt-fade,
+    420ms cubic-bezier(0.16, 1, 0.3, 1) both vt-shift;
+}
+
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+@keyframes vt-fade {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@keyframes vt-shift {
+  from {
+    translate: 0 var(--vt-offset);
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
+/* Reduced motion: keep the crossfade (opacity only), drop the movement and blur. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(.page-exit) {
+    animation: 120ms ease-in both vt-opacity reverse;
+  }
+  ::view-transition-new(.page-enter) {
+    animation: 180ms ease-out both vt-opacity;
+  }
+}
+
+@keyframes vt-opacity {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

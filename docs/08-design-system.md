@@ -79,6 +79,42 @@ Owning it means fixing it. What was changed, and why (each file has a header com
   - Unused `forwardRef` removed.
 - **Dependencies:** `@tabler/icons-react` was swapped for lucide, which is already installed.
 
+## Page transitions (View Transitions API)
+
+Navigating between Pages crossfades: the old page leaves quickly, drifting up with a slight blur, and the new one rises in a beat later. The header stays perfectly still.
+
+**How:** React's `<ViewTransition>` drives the browser's native [View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API). No animation library and no configuration are needed: Next.js navigations are React Transitions, and those are what activate it.
+
+```tsx
+// app/[[...slug]]/page.tsx
+<ViewTransition key={page.path} enter="page-enter" exit="page-exit" default="none">
+  <div><BlockRenderer … /></div>
+</ViewTransition>
+```
+
+The animation itself is plain CSS in `globals.css`: `::view-transition-old(.page-exit)` and `::view-transition-new(.page-enter)`.
+
+**Choices (from the Next.js view-transitions guide's four patterns):**
+- **Same-route crossfade, keyed by path.** Every Page renders through the one `[[...slug]]` route, so without the `key`, React would see an update, not an exit + enter.
+- **Not directional slides.** Home and About are sibling Pages the editor defines. Left/right motion would claim a forward/back hierarchy that doesn't exist.
+- **Not shared-element morphs.** Nothing is actually the same element across Pages. A morph would be a good fit for e.g. a Feature card → a detail page, if that existed.
+- **Asymmetric timing:** exit 160ms, enter 260ms fade after a 120ms delay, with a 420ms rise. Old content gets out of the way, and new content arrives gently.
+- **Header anchored:** it's named `site-header` and its animation is turned off, so it's the fixed reference point.
+- **Clicks aren't blocked** during the animation (`::view-transition { pointer-events: none }`).
+- **Reduced motion keeps a short opacity crossfade** and drops the movement and blur.
+- **Browsers without support** (or older ones) just swap instantly.
+
+**Verified in Chromium** (Playwright recording `document.getAnimations()` on the pseudo-elements, in dev and production):
+- nav links and in-content CTA links run the exit and enter animations
+- reduced motion runs opacity only
+- the header doesn't move
+
+**Browser Back/Forward swap instantly.** Next.js does wrap popstate in `startTransition`, but React renders transitions started during a `popstate` event eagerly (`shouldAttemptEagerTransition` in react-dom), so scroll restoration works, and no view transition runs. That's also the right result on mobile, where swipe-back gestures draw their own animation.
+
+**Gotchas hit:**
+- A `view-transition-name` makes its element a **backdrop root**. Named on the header's wrapper, it cut the pill's `backdrop-filter` off from the page (the blur disappeared). The name now sits on the blurred pill itself.
+- Watching the header during transitions exposed an existing bug: the Resizable Navbar animated `max-width` on **every page load** (no `initial` value). Fixed with `initial={false}`.
+
 ## Motion and accessibility
 
 - `<MotionConfig reducedMotion="user">` turns off transform animations (slides, drifting beams, the spotlight) for people with *prefers-reduced-motion*. Fades still play.

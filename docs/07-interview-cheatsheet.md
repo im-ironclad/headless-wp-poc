@@ -25,6 +25,7 @@
 - **Scaling / hosting?** WP Engine Atlas, Kinsta, Pantheon or Vercel for the frontend. WordPress stays private-ish, and caching GraphQL GETs at a CDN takes load off it. The WPGraphQL Smart Cache plugin adds purge-on-save for the network cache.
 - **Adding Contentful?** A new Adapter (`lib/cms/contentful`). The Page is a content type with a `blocks` field that's a *References, many* field restricted to Block content types. Reordering happens in the reference list. Components don't change.
 - **How is the frontend styled?** shadcn + Aceternity UI, both copy-paste: the code lives in `components/ui` and we own it. Everything reads CSS-variable tokens, so light and dark mode and rebrands happen in one file. Effects are `"use client"` islands inside Server Components, so pages are still SSG. It respects `prefers-reduced-motion`, and the LCP heading isn't animated. → doc 08
+- **Page transitions?** React `<ViewTransition>` on the browser's native View Transitions API, with no library. Keyed by path in the catch-all route, CSS for the animation, header anchored with a `view-transition-name`. Next navigations are Transitions, so it just works. Back/Forward are instant (React flushes popstate eagerly for scroll restoration). → doc 08
 - **Can editors change the design?** They control which Blocks, in what order, with what content. Per-Block *variants* (a select field → a component prop) are the usual next step, and deliberately not built here.
 - **Multilingual?** WPML or Polylang (+ their WPGraphQL extensions), and Next's `[locale]` segment.
 
@@ -41,6 +42,7 @@
 9. Preview showed **no Blocks** after a re-seed: a scripted `wp_insert_post` made a revision without ACF fields, and `asPreview` serves the latest revision. Fixed by clearing revisions in the seed, and caught by a stronger contract test.
 10. Copy-paste UI libraries need owning: the Aceternity code failed Next 16's React Compiler lint rules (`Math.random` during render, missing effect deps) and had a11y gaps (an icon used as a button).
 11. next-themes + React 19: its no-flash `<script>` triggers a dev warning when a layout re-renders on the client (the 404 page). Fix: a non-JS `type` for the client render only.
+12. `view-transition-name` makes an element a backdrop root, so a named header wrapper silently killed its child's `backdrop-filter` blur. Name the blurred element itself.
 
 ## Craft ↔ WordPress quick map
 Section → post type · Entry → post/page · Matrix → Flexible Content · Global Set → Options Page · Navigation → Menus · Module → mu-plugin · Events → hooks (actions/filters) · project config → PHP field registration / Local JSON · `craft` → `wp` CLI.

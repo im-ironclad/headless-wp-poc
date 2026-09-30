@@ -46,7 +46,7 @@ yarn screenshot      # full-page screenshots, light/dark × desktop/mobile (dev 
 | 5 | [docs/04-caching-preview.md](docs/04-caching-preview.md) | "Editor clicks Update, what happens?" and Draft Preview |
 | 6 | [docs/05-acf-vs-gutenberg.md](docs/05-acf-vs-gutenberg.md) | The other way to build a page builder in WordPress |
 | 7 | [docs/06-testing.md](docs/06-testing.md) | What's tested where, and how agencies test WordPress PHP |
-| 8 | [docs/08-design-system.md](docs/08-design-system.md) | Fonts, tokens, themes, which Aceternity/shadcn component is behind each Block, client islands |
+| 8 | [docs/08-design-system.md](docs/08-design-system.md) | Fonts, tokens, themes, which Aceternity/shadcn component is behind each Block, client islands, page transitions |
 | 9 | [docs/07-interview-cheatsheet.md](docs/07-interview-cheatsheet.md) | One-page talking points |
 | – | [docs/adr/](docs/adr/) | Why Flexible Content; why an Adapter with only one CMS |
 

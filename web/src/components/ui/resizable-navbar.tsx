@@ -7,6 +7,7 @@
  * - the body shrinks with max-width instead of `width: 40%` + `min-width: 800px`, so mid-size screens don't overflow
  * - the mobile toggle is a real <button> with aria-expanded (the original is a clickable icon)
  * - lucide icons instead of @tabler/icons-react
+ * - no animation on mount (initial={false}); only scrolling animates it
  * Link rendering is left to the caller, so this stays unaware of the CMS.
  */
 import { cn } from "@/lib/utils";
@@ -46,6 +47,8 @@ export const NavBody = ({
   visible?: boolean;
 }) => (
   <motion.div
+    // Start at rest: without this, every page load animates max-width in from "none".
+    initial={false}
     animate={{
       backdropFilter: visible ? "blur(12px)" : "blur(0px)",
       boxShadow: visible ? floatingShadow : "none",

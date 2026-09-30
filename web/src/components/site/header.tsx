@@ -16,7 +16,10 @@ export function Header({ globals }: { globals: Globals }) {
 
   return (
     <Navbar>
-      <NavBody>
+      {/* Named so page transitions leave it still (globals.css). The name goes on the blurred pill itself:
+          a view-transition-name makes an element a backdrop root, which would cut a child's backdrop-filter
+          off from the page behind it. */}
+      <NavBody className="[view-transition-name:site-header]">
         <Brand globals={globals} />
         <nav aria-label="Primary" className="hidden lg:block">
           <DesktopNav items={globals.primaryMenu} />
