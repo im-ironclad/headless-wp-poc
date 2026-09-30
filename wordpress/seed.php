@@ -140,4 +140,8 @@ update_field('field_ss_social', [
 ], 'option');
 update_field('field_ss_copyright', '© {year} Headless WP POC', 'option');
 
+// update_field() from the CLI doesn't fire the editor save hooks, so tell Next.js directly.
+// (No-op if Next.js isn't running.)
+headless_revalidate(['page:/', 'page:/about', 'pages', 'globals']);
+
 WP_CLI::success("Seeded Home (#{$home}), About (#{$about}), Primary Menu and Site Settings.");
