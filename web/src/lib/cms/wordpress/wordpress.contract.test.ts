@@ -1,53 +1,73 @@
 import { describe, expect, it } from "vitest";
 import { getAllPagePaths, getGlobals, getPage, getPreviewPage } from ".";
+import { toPage } from "./adapter";
+import { wordpressUrl, wpFetch } from "./client";
 
-// Assumes the seed content from wordpress/seed.php. Re-run ./wordpress/setup.sh to reset it.
+/**
+ * Contract tests: the real queries against the running WordPress (ddev).
+ *
+ * They check that WordPress and the frontend agree (schema, queries, URL rewriting, auth),
+ * never what the content is. Editors can add, remove and reorder Pages, Blocks and menu items
+ * freely without breaking these. Content order and conversion are covered by the fixture-based
+ * unit tests (adapter.test.ts, block-renderer.test.tsx).
+ */
 describe("WordPress contract", () => {
-  it("serves the seeded Home page with every Block Type, in order", async () => {
-    const page = await getPage("/");
+  it("has a Block Component for every Layout the Page Builder offers", async () => {
+    // Introspection, not content: the Layouts registered in PHP (page-builder-fields.php).
+    const { layouts } = await wpFetch<{ layouts: { possibleTypes: { name: string }[] } }>(
+      `query { layouts: __type(name: "PageBuilderBlocks_Layout") { possibleTypes { name } } }`,
+    );
+    const typenames = layouts.possibleTypes.map((type) => type.name);
+    expect(typenames.length).toBeGreaterThan(0);
 
-    expect(page).toMatchObject({ title: "Home", path: "/" });
-    expect(page?.blocks.map((block) => block.type)).toEqual([
-      "hero",
-      "richText",
-      "featureGrid",
-      "mediaText",
-      "ctaBanner",
-    ]);
+    // Through the Adapter's public behaviour: a Layout it doesn't know becomes an "unknown-type" Unsupported Block.
+    const page = toPage(
+      { databaseId: 1, title: "", uri: "/", isFrontPage: true, pageBuilder: { blocks: typenames.map((__typename) => ({ __typename })) } },
+      { wordpressUrl: wordpressUrl() },
+    );
+    const unknown = page.blocks.flatMap((block) =>
+      block.type === "unsupported" && block.reason === "unknown-type" ? [block.source] : [],
+    );
+    expect(unknown).toEqual([]);
   });
 
-  it("serves About with its own Blocks and order", async () => {
-    const page = await getPage("/about");
+  it("resolves every published Page path back to that Page", async () => {
+    // Also proves the queries (and every Block fragment in them) are valid against the live schema.
+    const paths = await getAllPagePaths();
+    expect(paths).toContain("/");
 
-    expect(page?.blocks.map((block) => block.type)).toEqual(["mediaText", "ctaBanner"]);
+    for (const path of paths) {
+      expect(await getPage(path), path).toMatchObject({ path });
+    }
   });
 
   it("returns null for a path with no Page", async () => {
-    expect(await getPage("/does-not-exist")).toBeNull();
+    expect(await getPage("/this-path-does-not-exist")).toBeNull();
   });
 
-  it("lists every published Page path for static generation", async () => {
-    expect(await getAllPagePaths()).toEqual(expect.arrayContaining(["/", "/about"]));
-  });
-
-  it("serves Globals: Primary Menu and Site Settings", async () => {
+  it("serves Globals with links rewritten for the frontend", async () => {
     const globals = await getGlobals();
+    const host = new URL(wordpressUrl()).host;
+    const flatten = (items: typeof globals.primaryMenu): string[] =>
+      items.flatMap((item) => [item.href, ...flatten(item.children)]);
+    const hrefs = [
+      ...flatten(globals.primaryMenu),
+      ...globals.siteSettings.footerColumns.flatMap((column) => column.links.map((link) => link.href)),
+    ];
 
-    expect(globals.primaryMenu.map((item) => [item.label, item.href])).toEqual([
-      ["Home", "/"],
-      ["About", "/about"],
-    ]);
-    expect(globals.siteSettings.footerColumns.map((column) => column.heading)).toEqual(["Studio", "Resources"]);
-    expect(globals.siteName).toBe("Lumen Studio");
-    expect(globals.siteSettings.copyright).toMatch(/^© \d{4} /);
+    expect(globals.siteName).toEqual(expect.any(String));
+    // Internal links are relative paths: nothing should send visitors to the WordPress host.
+    expect(hrefs.filter((href) => href.includes(host))).toEqual([]);
+    expect(globals.siteSettings.copyright ?? "").not.toContain("{year}");
   });
 
   it("serves Draft Preview when authenticated with the Application Password", async () => {
     const home = await getPage("/");
     const preview = await getPreviewPage(Number(home?.id));
 
-    expect(preview?.title).toBe("Home");
-    // With no unsaved edits, the preview matches the published Page, Blocks included.
-    expect(preview?.blocks).toEqual(home?.blocks);
+    expect(preview).not.toBeNull();
+    // A preview revision without the Page Builder fields would render an empty page (see seed.php).
+    // (Would only be wrong if an editor's unsaved draft deliberately removed every Block.)
+    if (home?.blocks.length) expect(preview?.blocks.length).toBeGreaterThan(0);
   });
 });

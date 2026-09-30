@@ -30,7 +30,7 @@ cd web && yarn && yarn dev    # http://localhost:3000
 ```bash
 cd web
 yarn test            # 30 unit + component tests (Vitest + RTL), no network
-yarn test:contract   # 6 contract tests against the running WordPress (needs seed content)
+yarn test:contract   # 5 contract tests against the running WordPress (any content)
 yarn lint && yarn typecheck && yarn build
 yarn screenshot      # full-page screenshots, light/dark × desktop/mobile (dev server running)
 ```

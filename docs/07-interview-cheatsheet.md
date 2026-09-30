@@ -39,10 +39,11 @@
 6. Next 16 blocks image optimization from local IPs (`dangerouslyAllowLocalIP` for ddev).
 7. Reading `draftMode()` in the root layout would make every page dynamic, so preview gets its own route.
 8. SCF (the free ACF fork) now includes Flexible Content, Repeater and Options Pages, and works with WPGraphQL for ACF.
-9. Preview showed **no Blocks** after a re-seed: a scripted `wp_insert_post` made a revision without ACF fields, and `asPreview` serves the latest revision. Fixed by clearing revisions in the seed, and caught by a stronger contract test.
+9. Preview showed **no Blocks** after a re-seed: a scripted `wp_insert_post` made a revision without ACF fields, and `asPreview` serves the latest revision. Fixed by clearing revisions in the seed. A contract test now checks that preview has Blocks.
 10. Copy-paste UI libraries need owning: the Aceternity code failed Next 16's React Compiler lint rules (`Math.random` during render, missing effect deps) and had a11y gaps (an icon used as a button).
 11. next-themes + React 19: its no-flash `<script>` triggers a dev warning when a layout re-renders on the client (the 404 page). Fix: a non-JS `type` for the client render only.
 12. View transitions vs a frosted (`backdrop-filter`) header: naming the wrapper kills the blur (a backdrop root). Naming the pill bakes the blurred backdrop into its snapshot (a purple box in real Chrome only). Fix: name the pill and turn its `backdrop-filter` off during `:root:active-view-transition`. Found by recording every frame with a DevTools screencast in real Chrome.
+13. The first contract tests asserted seeded content (block order, exact menu) and broke when an editor added a Page. Contract tests should assert *agreement* (schema Layouts ↔ components, every path resolves, links rewritten), not content.
 
 ## Craft ↔ WordPress quick map
 Section → post type · Entry → post/page · Matrix → Flexible Content · Global Set → Options Page · Navigation → Menus · Module → mu-plugin · Events → hooks (actions/filters) · project config → PHP field registration / Local JSON · `craft` → `wp` CLI.
