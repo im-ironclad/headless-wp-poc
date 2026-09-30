@@ -20,6 +20,10 @@ _Avoid_: Component, section, module
 The kind of a Block: Hero, Rich Text, Feature Grid, Media + Text, or CTA Banner.
 _Avoid_: Layout (except when naming the ACF concept), block kind
 
+**Unsupported Block**:
+A Block the frontend can't render, because its Block Type is unknown to the frontend or it's missing required content. Hidden from visitors and flagged to editors and developers.
+_Avoid_: Broken block, unknown block
+
 **Layout**:
 ACF's name for a Block Type inside a Flexible Content field. Used only when talking about the WordPress side.
 
