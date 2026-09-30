@@ -33,7 +33,7 @@ WordPress's native editor block. It's a separate system that this project does *
 ## Site-wide
 
 **Globals**:
-Site-wide content that doesn't belong to any Page: the header navigation and the Site Settings.
+Site-wide content that doesn't belong to any Page: the site name, the header navigation and the Site Settings.
 _Avoid_: Settings, options, config
 
 **Site Settings**:

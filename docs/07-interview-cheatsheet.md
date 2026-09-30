@@ -1,7 +1,7 @@
 # Interview cheat sheet
 
 ## 30-second pitch of the POC
-"WordPress is purely the content API. Pages have a single ACF Flexible Content field. That's the Page Builder, where editors add, reorder and remove typed Blocks, the Matrix equivalent. WPGraphQL for ACF exposes it as a GraphQL union. In Next.js a WordPress Adapter converts that into a CMS-agnostic Block model, and a registry maps each Block Type to a shadcn-based Server Component. Pages are static, and WordPress calls a revalidate webhook with cache tags on save. Drafts preview through Next draft mode using an Application Password. Tested with Vitest/RTL at the adapter and renderer seams, plus contract tests against the live WordPress."
+"WordPress is purely the content API. Pages have a single ACF Flexible Content field. That's the Page Builder, where editors add, reorder and remove typed Blocks, the Matrix equivalent. WPGraphQL for ACF exposes it as a GraphQL union. In Next.js a WordPress Adapter converts that into a CMS-agnostic Block model, and a registry maps each Block Type to a shadcn-based Server Component. Pages are static, and WordPress calls a revalidate webhook with cache tags on save. Drafts preview through Next draft mode using an Application Password. Tested with Vitest/RTL at the adapter and renderer seams, plus contract tests against the live WordPress. The design system is shadcn plus Aceternity UI on theme tokens (light and dark). Effects are small client islands inside Server Components, so pages stay static."
 
 ## Likely questions → answers
 
@@ -24,6 +24,8 @@
 - **SEO?** Here it's basic `generateMetadata` from title + excerpt. In real projects: **Yoast** or **Rank Math** + **WPGraphQL for Yoast (wp-graphql-yoast-seo)** exposes `seo { title metaDesc opengraphImage … fullHead }`. Plus a sitemap (generated in Next from `getAllPagePaths`) and redirects (the Redirection plugin → Next `redirects`/middleware).
 - **Scaling / hosting?** WP Engine Atlas, Kinsta, Pantheon or Vercel for the frontend. WordPress stays private-ish, and caching GraphQL GETs at a CDN takes load off it. The WPGraphQL Smart Cache plugin adds purge-on-save for the network cache.
 - **Adding Contentful?** A new Adapter (`lib/cms/contentful`). The Page is a content type with a `blocks` field that's a *References, many* field restricted to Block content types. Reordering happens in the reference list. Components don't change.
+- **How is the frontend styled?** shadcn + Aceternity UI, both copy-paste: the code lives in `components/ui` and we own it. Everything reads CSS-variable tokens, so light and dark mode and rebrands happen in one file. Effects are `"use client"` islands inside Server Components, so pages are still SSG. It respects `prefers-reduced-motion`, and the LCP heading isn't animated. → doc 08
+- **Can editors change the design?** They control which Blocks, in what order, with what content. Per-Block *variants* (a select field → a component prop) are the usual next step, and deliberately not built here.
 - **Multilingual?** WPML or Polylang (+ their WPGraphQL extensions), and Next's `[locale]` segment.
 
 ## Gotchas hit while building (good "war stories")
@@ -36,6 +38,9 @@
 6. Next 16 blocks image optimization from local IPs (`dangerouslyAllowLocalIP` for ddev).
 7. Reading `draftMode()` in the root layout would make every page dynamic, so preview gets its own route.
 8. SCF (the free ACF fork) now includes Flexible Content, Repeater and Options Pages, and works with WPGraphQL for ACF.
+9. Preview showed **no Blocks** after a re-seed: a scripted `wp_insert_post` made a revision without ACF fields, and `asPreview` serves the latest revision. Fixed by clearing revisions in the seed, and caught by a stronger contract test.
+10. Copy-paste UI libraries need owning: the Aceternity code failed Next 16's React Compiler lint rules (`Math.random` during render, missing effect deps) and had a11y gaps (an icon used as a button).
+11. next-themes + React 19: its no-flash `<script>` triggers a dev warning when a layout re-renders on the client (the 404 page). Fix: a non-JS `type` for the client render only.
 
 ## Craft ↔ WordPress quick map
 Section → post type · Entry → post/page · Matrix → Flexible Content · Global Set → Options Page · Navigation → Menus · Module → mu-plugin · Events → hooks (actions/filters) · project config → PHP field registration / Local JSON · `craft` → `wp` CLI.

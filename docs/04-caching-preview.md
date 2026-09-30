@@ -55,6 +55,6 @@ sequenceDiagram
 Key points:
 - **Why a separate `/preview/[id]` route?** Drafts have no public URL yet, and reading `draftMode()` in the shared layout would turn *every* page dynamic. Keeping preview in its own route leaves public pages static.
 - **Auth: Application Passwords** (built into WordPress since 5.6). There's a dedicated `headless-preview` user with the *editor* role, and `setup.sh` creates the password. Anonymous requests for the same draft return `null`. **The alternative is WPGraphQL JWT Authentication**: short-lived tokens and per-user previews, but it's another plugin with token refresh to manage.
-- `asPreview: true` returns the latest autosave or revision, so it includes unsaved changes to a *published* Page.
+- `asPreview: true` returns the latest autosave or revision, so it includes unsaved changes to a *published* Page. **Gotcha:** ACF fields live on the revision too. A revision created *without* them (e.g. `wp_insert_post` in a script, followed by `update_field` on the Page) previews with no Blocks. The Preview button is safe because its autosave includes the fields. `seed.php` clears the seeded Pages' revisions, and the contract test now checks that preview Blocks match the published ones.
 - **Exit preview** is a Server Action that calls `draftMode().disable()`.
 - `/preview/[id]` without the cookie returns 404, and a bad secret returns 401. Both were checked end to end.

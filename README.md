@@ -1,6 +1,6 @@
 # Headless WordPress Page Builder POC
 
-Editors build Pages in WordPress from reorderable **Blocks** (Hero, Rich Text, Feature Grid, Media + Text, CTA Banner). A Next.js + shadcn frontend renders them. It's the Craft **Matrix** pattern, done the headless WordPress way.
+Editors build Pages in WordPress from reorderable **Blocks** (Hero, Rich Text, Feature Grid, Media + Text, CTA Banner). A Next.js frontend renders them, branded as the fictional **Lumen Studio** with shadcn + Aceternity UI components in light and dark mode. It's the Craft **Matrix** pattern, done the headless WordPress way.
 
 ```
 ┌──────────────── WordPress (ddev) ─────────────────┐        ┌──────────── Next.js (web/) ─────────────┐
@@ -29,9 +29,10 @@ cd web && yarn && yarn dev    # http://localhost:3000
 
 ```bash
 cd web
-yarn test            # 27 unit + component tests (Vitest + RTL), no network
+yarn test            # 30 unit + component tests (Vitest + RTL), no network
 yarn test:contract   # 6 contract tests against the running WordPress (needs seed content)
 yarn lint && yarn typecheck && yarn build
+yarn screenshot      # full-page screenshots, light/dark × desktop/mobile (dev server running)
 ```
 
 ## Reading order
@@ -45,7 +46,8 @@ yarn lint && yarn typecheck && yarn build
 | 5 | [docs/04-caching-preview.md](docs/04-caching-preview.md) | "Editor clicks Update, what happens?" and Draft Preview |
 | 6 | [docs/05-acf-vs-gutenberg.md](docs/05-acf-vs-gutenberg.md) | The other way to build a page builder in WordPress |
 | 7 | [docs/06-testing.md](docs/06-testing.md) | What's tested where, and how agencies test WordPress PHP |
-| 8 | [docs/07-interview-cheatsheet.md](docs/07-interview-cheatsheet.md) | One-page talking points |
+| 8 | [docs/08-design-system.md](docs/08-design-system.md) | Fonts, tokens, themes, which Aceternity/shadcn component is behind each Block, client islands |
+| 9 | [docs/07-interview-cheatsheet.md](docs/07-interview-cheatsheet.md) | One-page talking points |
 | – | [docs/adr/](docs/adr/) | Why Flexible Content; why an Adapter with only one CMS |
 
 ## Repo map
@@ -54,6 +56,7 @@ yarn lint && yarn typecheck && yarn build
 wordpress/
   .ddev/config.headless.yaml     env: frontend URL, secrets, WP_ENVIRONMENT_TYPE=local
   setup.sh, seed.php             reproducible install + demo content
+  assets/                        brand artwork the seed imports (made by web/scripts/generate-seed-art.mjs)
   web/wp-content/mu-plugins/     ALL the WordPress code (WP core + plugins are gitignored)
     page-builder-fields.php      the Page Builder field group (in code, not DB)
     site-settings.php            Options Page for footer/brand Globals
@@ -65,8 +68,11 @@ web/src/
   lib/cms/types.ts               the CMS-agnostic model (start here)
   lib/cms/wordpress/             Adapter: client, queries, fragments, adapter.ts, tags
   components/blocks/             Block Components + BlockRenderer
-  components/site/               Header, Footer, CmsLink, Prose
+  components/site/               Header, Footer, ThemeToggle, Providers, Reveal, CmsLink, Prose
+  components/ui/                 shadcn + Aceternity components (copied in, adapted: see doc 08)
+  app/globals.css                design tokens (light + dark), fonts, utilities
   app/[[...slug]]/page.tsx       every Page
   app/preview/[id]/page.tsx      Draft Preview
   app/api/{revalidate,preview}/  webhooks
+  scripts/                       seed artwork + screenshot scripts (Playwright)
 ```

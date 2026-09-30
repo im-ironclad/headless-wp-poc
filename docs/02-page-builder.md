@@ -34,7 +34,7 @@ The editor sees a **Blocks** field with **Add Block**. Each Block is a collapsib
 
 ```
 blocks            = a:5:{i:0;s:4:"hero";i:1;s:9:"rich_text";…}   ← order + Layout per row
-blocks_0_heading  = "Build pages from blocks"
+blocks_0_heading  = "Websites that move at the speed of your ideas"
 blocks_0_image    = 8                                            ← attachment ID
 blocks_0_cta      = a:3:{s:5:"title";…}
 ```
