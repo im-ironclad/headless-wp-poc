@@ -1,10 +1,12 @@
 import { render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import type { Globals } from "@/lib/cms/types";
 import { Footer } from "./footer";
 import { Header } from "./header";
 
 const globals: Globals = {
+  siteName: "Acme",
   primaryMenu: [
     { id: "1", label: "Home", href: "/", children: [] },
     {
@@ -27,7 +29,7 @@ const globals: Globals = {
 };
 
 describe("Header", () => {
-  it("links the logo home and renders the Primary Menu, including nested items", () => {
+  it("links the site name home and renders the Primary Menu, including nested items", () => {
     render(<Header globals={globals} />);
 
     expect(screen.getByRole("link", { name: "Acme" })).toHaveAttribute("href", "/");
@@ -35,6 +37,24 @@ describe("Header", () => {
     expect(within(nav).getByRole("link", { name: "Home" })).toHaveAttribute("href", "/");
     expect(within(nav).getByRole("link", { name: "Services" })).toHaveAttribute("href", "/services");
     expect(within(nav).getByRole("link", { name: "Design" })).toHaveAttribute("href", "/services/design");
+  });
+
+  it("opens the Primary Menu on small screens from a menu button", async () => {
+    render(<Header globals={globals} />);
+
+    const toggle = screen.getByRole("button", { name: "Open menu" });
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await userEvent.click(toggle);
+
+    const menu = screen.getByRole("navigation", { name: "Mobile" });
+    expect(within(menu).getByRole("link", { name: "Design" })).toHaveAttribute("href", "/services/design");
+    expect(screen.getByRole("button", { name: "Close menu" })).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("has a light/dark theme toggle", () => {
+    render(<Header globals={globals} />);
+
+    expect(screen.getByRole("button", { name: "Toggle theme" })).toBeInTheDocument();
   });
 });
 

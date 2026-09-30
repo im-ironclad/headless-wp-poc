@@ -25,14 +25,15 @@ export default async function PreviewPage({ params }: PageProps<"/preview/[id]">
 
   return (
     <>
+      {/* Floating pill at the bottom, so it never covers the sticky header. Amber reads as "not live" in both themes. */}
       <form
         action={exitPreview}
-        className="sticky top-0 z-20 -mx-4 flex items-center justify-between gap-4 bg-amber-100 px-4 py-2 text-sm text-amber-950"
+        className="fixed inset-x-4 bottom-4 z-50 mx-auto flex max-w-xl items-center justify-between gap-4 rounded-full border border-amber-500/40 bg-amber-100/90 py-2 pl-5 pr-2 text-sm text-amber-950 shadow-xl backdrop-blur dark:bg-amber-950/80 dark:text-amber-100"
       >
         <span>
-          Draft Preview: <strong>{page.title}</strong>. Unpublished changes are visible only to you.
+          <strong>Draft Preview:</strong> {page.title}. Only you can see unpublished changes.
         </span>
-        <Button type="submit" size="sm" variant="outline">
+        <Button type="submit" size="sm" variant="outline" className="rounded-full">
           Exit preview
         </Button>
       </form>

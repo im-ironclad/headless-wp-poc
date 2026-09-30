@@ -40,8 +40,10 @@ export function BlockRenderer({ blocks, showUnsupported = false }: Props) {
 
 function UnsupportedPlaceholder({ source, reason }: UnsupportedBlock) {
   return (
-    <div role="note" className="my-6 rounded-lg border-2 border-dashed border-destructive/50 p-6 text-sm text-destructive">
-      Unsupported block: {source} ({reason})
+    <div className="container-page py-6">
+      <div role="note" className="rounded-2xl border-2 border-dashed border-destructive/50 p-6 text-sm text-destructive">
+        Unsupported block: {source} ({reason})
+      </div>
     </div>
   );
 }
