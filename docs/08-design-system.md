@@ -99,7 +99,7 @@ The animation itself is plain CSS in `globals.css`: `::view-transition-old(.page
 - **Not directional slides.** Home and About are sibling Pages the editor defines. Left/right motion would claim a forward/back hierarchy that doesn't exist.
 - **Not shared-element morphs.** Nothing is actually the same element across Pages. A morph would be a good fit for e.g. a Feature card → a detail page, if that existed.
 - **Asymmetric timing:** exit 160ms, enter 260ms fade after a 120ms delay, with a 420ms rise. Old content gets out of the way, and new content arrives gently.
-- **Header anchored:** it's named `site-header` and its animation is turned off, so it's the fixed reference point.
+- **Header anchored:** the pill is named `site-header` (via `[data-site-header]` in `globals.css`), drawn above the changing page, and not animated, so it's the fixed reference point. Its `backdrop-filter` is off while `:root:active-view-transition` matches, and the scrolled pill gets a more solid background for those few hundred milliseconds.
 - **Clicks aren't blocked** during the animation (`::view-transition { pointer-events: none }`).
 - **Reduced motion keeps a short opacity crossfade** and drops the movement and blur.
 - **Browsers without support** (or older ones) just swap instantly.
@@ -107,12 +107,17 @@ The animation itself is plain CSS in `globals.css`: `::view-transition-old(.page
 **Verified in Chromium** (Playwright recording `document.getAnimations()` on the pseudo-elements, in dev and production):
 - nav links and in-content CTA links run the exit and enter animations
 - reduced motion runs opacity only
-- the header doesn't move
+- the header doesn't move, and there's no flash in the header in real Chrome (GPU) at the top of the page, scrolled, or in light and dark mode
 
 **Browser Back/Forward swap instantly.** Next.js does wrap popstate in `startTransition`, but React renders transitions started during a `popstate` event eagerly (`shouldAttemptEagerTransition` in react-dom), so scroll restoration works, and no view transition runs. That's also the right result on mobile, where swipe-back gestures draw their own animation.
 
 **Gotchas hit:**
-- A `view-transition-name` makes its element a **backdrop root**. Named on the header's wrapper, it cut the pill's `backdrop-filter` off from the page (the blur disappeared). The name now sits on the blurred pill itself.
+Three attempts at anchoring the frosted header, each with a different failure:
+1. **Named the wrapper.** A `view-transition-name` makes its element a **backdrop root**, so the pill's `backdrop-filter` (a child) could no longer see the page. The blur disappeared.
+2. **Named the pill itself.** A named element is captured as a flat image, and in Chrome that image **includes what its `backdrop-filter` was showing**. At the top of Home that was the Hero's purple glow, so a hard-edged purple rectangle was painted over the next page. Headless Chromium didn't show it. Real Chrome (GPU) did, found by recording every frame with the DevTools screencast.
+3. **Named only the contents.** Then the pill's background stayed in the root snapshot, *under* the page snapshots, so page content briefly painted over the pill.
+
+**Final version:** name the pill, and switch its `backdrop-filter` off with `:root:active-view-transition` so the snapshots are clean. Mix the temporary background in **sRGB**: `color-mix(in oklch, …, transparent)` tinted it maroon, because `transparent` has no hue and OKLCH interpolated one.
 - Watching the header during transitions exposed an existing bug: the Resizable Navbar animated `max-width` on **every page load** (no `initial` value). Fixed with `initial={false}`.
 
 ## Motion and accessibility

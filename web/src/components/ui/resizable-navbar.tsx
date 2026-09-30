@@ -41,12 +41,15 @@ export const NavBody = ({
   children,
   className,
   visible,
+  ...rest
 }: {
   children: React.ReactNode;
   className?: string;
   visible?: boolean;
-}) => (
+} & Record<`data-${string}`, string>) => (
   <motion.div
+    {...rest}
+    data-scrolled={visible ? "true" : "false"}
     // Start at rest: without this, every page load animates max-width in from "none".
     initial={false}
     animate={{

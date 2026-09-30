@@ -42,7 +42,7 @@
 9. Preview showed **no Blocks** after a re-seed: a scripted `wp_insert_post` made a revision without ACF fields, and `asPreview` serves the latest revision. Fixed by clearing revisions in the seed, and caught by a stronger contract test.
 10. Copy-paste UI libraries need owning: the Aceternity code failed Next 16's React Compiler lint rules (`Math.random` during render, missing effect deps) and had a11y gaps (an icon used as a button).
 11. next-themes + React 19: its no-flash `<script>` triggers a dev warning when a layout re-renders on the client (the 404 page). Fix: a non-JS `type` for the client render only.
-12. `view-transition-name` makes an element a backdrop root, so a named header wrapper silently killed its child's `backdrop-filter` blur. Name the blurred element itself.
+12. View transitions vs a frosted (`backdrop-filter`) header: naming the wrapper kills the blur (a backdrop root). Naming the pill bakes the blurred backdrop into its snapshot (a purple box in real Chrome only). Fix: name the pill and turn its `backdrop-filter` off during `:root:active-view-transition`. Found by recording every frame with a DevTools screencast in real Chrome.
 
 ## Craft ↔ WordPress quick map
 Section → post type · Entry → post/page · Matrix → Flexible Content · Global Set → Options Page · Navigation → Menus · Module → mu-plugin · Events → hooks (actions/filters) · project config → PHP field registration / Local JSON · `craft` → `wp` CLI.
