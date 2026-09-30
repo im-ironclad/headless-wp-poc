@@ -2,6 +2,8 @@
 
 Editors build Pages in WordPress from reorderable **Blocks** (Hero, Rich Text, Feature Grid, Media + Text, CTA Banner). A Next.js frontend renders them, branded as the fictional **Lumen Studio** with shadcn + Aceternity UI components in light and dark mode. It's the Craft **Matrix** pattern, done the headless WordPress way.
 
+![Lumen Studio above-the-fold screenshot](lumen-studio-atf.png "Lumen Studio above-the-fold screenshot")
+
 ```
 ┌──────────────── WordPress (ddev) ─────────────────┐        ┌──────────── Next.js (web/) ─────────────┐
 │ wp-admin: Page Builder, Menus, Site Settings      │        │ lib/cms/wordpress   Adapter             │
@@ -37,18 +39,18 @@ yarn screenshot      # full-page screenshots, light/dark × desktop/mobile (dev 
 
 ## Reading order
 
-| # | Doc | What you'll get |
-|---|-----|-----------------|
-| 1 | [CONTEXT.md](CONTEXT.md) | Vocabulary: Page, Block, Block Type, Layout, Globals… |
-| 2 | [docs/01-wordpress-for-craft-devs.md](docs/01-wordpress-for-craft-devs.md) | WordPress mental model, mapped onto Craft |
-| 3 | [docs/02-page-builder.md](docs/02-page-builder.md) | One Block traced from PHP → GraphQL → Adapter → React |
-| 4 | [docs/03-frontend-adapter.md](docs/03-frontend-adapter.md) | Frontend architecture, plain fetch vs Apollo, codegen |
-| 5 | [docs/04-caching-preview.md](docs/04-caching-preview.md) | "Editor clicks Update, what happens?" and Draft Preview |
-| 6 | [docs/05-acf-vs-gutenberg.md](docs/05-acf-vs-gutenberg.md) | The other way to build a page builder in WordPress |
-| 7 | [docs/06-testing.md](docs/06-testing.md) | What's tested where, and how agencies test WordPress PHP |
-| 8 | [docs/08-design-system.md](docs/08-design-system.md) | Fonts, tokens, themes, which Aceternity/shadcn component is behind each Block, client islands, page transitions |
-| 9 | [docs/07-interview-cheatsheet.md](docs/07-interview-cheatsheet.md) | One-page talking points |
-| – | [docs/adr/](docs/adr/) | Why Flexible Content; why an Adapter with only one CMS |
+| #   | Doc                                                                        | What you'll get                                                                                                 |
+| --- | -------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| 1   | [CONTEXT.md](CONTEXT.md)                                                   | Vocabulary: Page, Block, Block Type, Layout, Globals…                                                           |
+| 2   | [docs/01-wordpress-for-craft-devs.md](docs/01-wordpress-for-craft-devs.md) | WordPress mental model, mapped onto Craft                                                                       |
+| 3   | [docs/02-page-builder.md](docs/02-page-builder.md)                         | One Block traced from PHP → GraphQL → Adapter → React                                                           |
+| 4   | [docs/03-frontend-adapter.md](docs/03-frontend-adapter.md)                 | Frontend architecture, plain fetch vs Apollo, codegen                                                           |
+| 5   | [docs/04-caching-preview.md](docs/04-caching-preview.md)                   | "Editor clicks Update, what happens?" and Draft Preview                                                         |
+| 6   | [docs/05-acf-vs-gutenberg.md](docs/05-acf-vs-gutenberg.md)                 | The other way to build a page builder in WordPress                                                              |
+| 7   | [docs/06-testing.md](docs/06-testing.md)                                   | What's tested where, and how agencies test WordPress PHP                                                        |
+| 8   | [docs/08-design-system.md](docs/08-design-system.md)                       | Fonts, tokens, themes, which Aceternity/shadcn component is behind each Block, client islands, page transitions |
+| 9   | [docs/07-interview-cheatsheet.md](docs/07-interview-cheatsheet.md)         | One-page talking points                                                                                         |
+| –   | [docs/adr/](docs/adr/)                                                     | Why Flexible Content; why an Adapter with only one CMS                                                          |
 
 ## Repo map
 
