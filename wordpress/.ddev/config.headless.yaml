@@ -1,0 +1,10 @@
+# Environment for the headless integration, read by mu-plugins via getenv().
+# Local-only values: in a real project these come from the host's secret store.
+web_environment:
+  - HEADLESS_FRONTEND_URL=http://localhost:3000
+  # How the WP container reaches Next.js running on your Mac.
+  - HEADLESS_REVALIDATE_URL=http://host.docker.internal:3000/api/revalidate
+  - HEADLESS_REVALIDATE_SECRET=dev-revalidate-secret
+  - HEADLESS_PREVIEW_SECRET=dev-preview-secret
+  # "local" lets Application Passwords work over plain http (they require https otherwise).
+  - WP_ENVIRONMENT_TYPE=local

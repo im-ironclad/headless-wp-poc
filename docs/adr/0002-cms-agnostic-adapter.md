@@ -1,0 +1,3 @@
+# Frontend renders CMS-agnostic Blocks through an Adapter, even with one CMS
+
+The frontend never uses WPGraphQL response shapes directly. A WordPress Adapter converts them into a CMS-agnostic `Page`/`Block`/`Globals` model, and Block Components only ever receive that model. With only one CMS this adds a layer that isn't strictly needed. We accept that because generated WordPress type names (e.g. `PageBuilderPageBuilderHeroLayout`) would otherwise spread through the UI, the Adapter is the single place to unit-test data handling (sanitization, URL rewriting, dropping unknown Layouts), and it lets the agency add a second CMS (e.g. Contentful) as a new Adapter without touching components.

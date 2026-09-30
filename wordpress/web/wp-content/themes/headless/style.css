@@ -1,0 +1,5 @@
+/*
+Theme Name: Headless
+Description: No-frontend theme. WordPress only serves wp-admin and the GraphQL API; public URLs redirect to the Next.js site.
+Version: 1.0.0
+*/
