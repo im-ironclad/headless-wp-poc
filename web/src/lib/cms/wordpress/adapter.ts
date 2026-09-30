@@ -39,6 +39,7 @@ export function toGlobals(raw: WpGlobals, ctx: AdapterContext): Globals {
   const fields = raw.siteSettings?.siteSettingsFields;
   const year = String((ctx.now ?? new Date()).getFullYear());
   return {
+    siteName: optStr(raw.generalSettings?.title),
     primaryMenu: toNavTree(list<WpMenuItem>(raw.menuItems?.nodes), ctx),
     siteSettings: {
       logo: toImage(fields?.logo ?? null),

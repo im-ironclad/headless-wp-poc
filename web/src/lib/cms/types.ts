@@ -110,6 +110,8 @@ export type NavItem = {
 export type SocialPlatform = "instagram" | "facebook" | "x" | "linkedin" | "youtube";
 
 export type Globals = {
+  /** The site's name (WordPress: Settings → General → Site Title). */
+  siteName?: string;
   primaryMenu: NavItem[];
   siteSettings: {
     logo?: Image;

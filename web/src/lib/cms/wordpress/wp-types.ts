@@ -32,6 +32,7 @@ export type WpFooterColumn = { heading?: string | null; links?: ({ link?: WpLink
 export type WpSocialLink = { platform?: (string | null)[] | null; url?: string | null };
 
 export type WpGlobals = {
+  generalSettings?: { title?: string | null } | null;
   menuItems?: { nodes?: (WpMenuItem | null)[] | null } | null;
   siteSettings?: {
     siteSettingsFields?: {

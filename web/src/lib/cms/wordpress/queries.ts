@@ -37,6 +37,7 @@ export const ALL_PAGE_URIS = /* GraphQL */ `
 
 export const GLOBALS = /* GraphQL */ `
   query Globals {
+    generalSettings { title }
     menuItems(first: 100, where: { location: PRIMARY }) {
       nodes { id label url parentId }
     }

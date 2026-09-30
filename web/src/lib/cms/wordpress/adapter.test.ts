@@ -277,6 +277,10 @@ describe("toGlobals", () => {
     });
   });
 
+  it("uses the WordPress site title (Settings → General) as the site name", () => {
+    expect(toGlobals({ ...raw, generalSettings: { title: "Lumen Studio" } }, ctx).siteName).toBe("Lumen Studio");
+  });
+
   it("returns empty Globals when nothing is configured", () => {
     expect(toGlobals({ menuItems: null, siteSettings: null }, ctx)).toEqual({
       primaryMenu: [],

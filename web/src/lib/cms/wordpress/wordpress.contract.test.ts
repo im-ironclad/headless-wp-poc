@@ -37,7 +37,8 @@ describe("WordPress contract", () => {
       ["Home", "/"],
       ["About", "/about"],
     ]);
-    expect(globals.siteSettings.footerColumns.map((column) => column.heading)).toEqual(["Site", "Resources"]);
+    expect(globals.siteSettings.footerColumns.map((column) => column.heading)).toEqual(["Studio", "Resources"]);
+    expect(globals.siteName).toBe("Lumen Studio");
     expect(globals.siteSettings.copyright).toMatch(/^© \d{4} /);
   });
 
@@ -46,5 +47,7 @@ describe("WordPress contract", () => {
     const preview = await getPreviewPage(Number(home?.id));
 
     expect(preview?.title).toBe("Home");
+    // With no unsaved edits, the preview matches the published Page, Blocks included.
+    expect(preview?.blocks).toEqual(home?.blocks);
   });
 });
