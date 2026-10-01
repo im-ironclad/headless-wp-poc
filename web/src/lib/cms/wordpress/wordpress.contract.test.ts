@@ -13,7 +13,7 @@ import { wordpressUrl, wpFetch } from "./client";
  */
 describe("WordPress contract", () => {
   it("has a Block Component for every Layout the Page Builder offers", async () => {
-    // Introspection, not content: the Layouts registered in PHP (page-builder-fields.php).
+    // Introspection, not content: the Layouts defined in SCF (acf-json/group_page_builder.json).
     const { layouts } = await wpFetch<{ layouts: { possibleTypes: { name: string }[] } }>(
       `query { layouts: __type(name: "PageBuilderBlocks_Layout") { possibleTypes { name } } }`,
     );

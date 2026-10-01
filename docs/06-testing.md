@@ -23,7 +23,7 @@ Tests use React Testing Library queries by **role and accessible name** (`getByR
 
 The first version asserted the seeded content: Home's five Blocks in order, a menu of exactly Home and About. It broke as soon as an editor added a Page to the menu, which is exactly what editors are *supposed* to do. So the contract tests now only assert invariants that hold for any content:
 
-- **Schema ↔ components:** the Layouts WPGraphQL offers (by introspection, not by reading content) must all be known to the Adapter. Adding a Layout in PHP without a Block Component fails here, naming the Layout.
+- **Schema ↔ components:** the Layouts WPGraphQL offers (by introspection, not by reading content) must all be known to the Adapter. Adding a Layout in SCF without a Block Component fails here, naming the Layout.
 - **Round trip:** every path from `getAllPagePaths()` resolves via `getPage()` to a Page at that path. That runs the full query, with every Block fragment, against the live schema.
 - **Link rewriting on real data:** no menu or footer link points at the WordPress host.
 
@@ -39,7 +39,7 @@ Order preservation is still tested, in the fixture-based adapter and renderer un
 
 ## Why contract tests instead of PHPUnit here
 
-The WordPress code in this repo is almost all **declarative config** (field arrays, filters) plus one HTTP call. The real risk is **drift**: someone renames a field in PHP and the frontend query breaks. Contract tests catch exactly that, from the side that would break.
+The WordPress code in this repo is almost all **declarative config** (field arrays, filters) plus one HTTP call. The real risk is **drift**: someone renames a field in SCF and the frontend query breaks. Contract tests catch exactly that, from the side that would break.
 
 ## How agencies test WordPress PHP (so you can talk about it)
 

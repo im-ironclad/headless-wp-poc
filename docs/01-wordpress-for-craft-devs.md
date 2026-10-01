@@ -19,7 +19,7 @@ Almost everything in WordPress is a **post**: one row in `wp_posts` with a `post
 | Module / plugin | **Plugin**, or **mu-plugin** for project code | `mu-plugins/*.php` |
 | Events (`Event::on`) | **Hooks**: actions (`add_action`) and filters (`add_filter`) | everywhere |
 | Twig templates | **Theme** templates (PHP) | Unused. The theme only redirects |
-| Project config (`config/project`) | Nothing built in. Field groups live in the DB by default. **Local JSON** or **PHP registration** is how you version them | PHP registration |
+| Project config (`config/project`) | Nothing built in. Field groups live in the DB by default. **Local JSON** or **PHP registration** is how you version them | Local JSON (`themes/headless/acf-json`) |
 | GraphQL (built in) | **WPGraphQL** plugin + **WPGraphQL for ACF** | ✓ |
 | Live Preview | Preview button + `preview_post_link` filter + a Next draft route | ✓ |
 | `craft` CLI | **WP-CLI** (`wp …`, here `ddev wp …`) | `setup.sh` |
@@ -35,7 +35,7 @@ Every customization here is a hook:
 |---|---|---|
 | headless-config.php | `use_block_editor_for_post_type` (filter) | Turn off Gutenberg for Pages, so editors only see the Page Builder |
 | headless-config.php | `after_setup_theme` → `register_nav_menus` | Create the `primary` menu location |
-| page-builder-fields.php | `acf/init` → `acf_add_local_field_group` | Register fields in code |
+| headless-config.php | `acf/settings/show_admin` (filter) | Only show the SCF field editor on local sites |
 | revalidate.php | `acf/save_post` (priority 20), `transition_post_status`, `wp_update_nav_menu` | Tell Next.js what changed |
 | preview.php | `preview_post_link` (filter) | Point "Preview" at Next.js |
 

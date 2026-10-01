@@ -59,13 +59,13 @@ wordpress/
   .ddev/config.headless.yaml     env: frontend URL, secrets, WP_ENVIRONMENT_TYPE=local
   setup.sh, seed.php             reproducible install + demo content
   assets/                        brand artwork the seed imports (made by web/scripts/generate-seed-art.mjs)
-  web/wp-content/mu-plugins/     ALL the WordPress code (WP core + plugins are gitignored)
-    page-builder-fields.php      the Page Builder field group (in code, not DB)
-    site-settings.php            Options Page for footer/brand Globals
-    headless-config.php          disable Gutenberg on Pages, menu location, env helpers
+  sync-acf-json.php              imports acf-json into the DB (CLI "Sync available")
+  web/wp-content/mu-plugins/     the WordPress PHP (WP core + plugins are gitignored)
+    headless-config.php          disable Gutenberg on Pages, menu location, env helpers, SCF admin local-only
     revalidate.php               save hooks → POST Next.js /api/revalidate
     preview.php                  "Preview" button → Next.js /api/preview
   web/wp-content/themes/headless/ redirects any public WP URL to Next.js
+    acf-json/                    Local JSON: Page Builder + Site Settings field groups, Site Settings Options Page
 web/src/
   lib/cms/types.ts               the CMS-agnostic model (start here)
   lib/cms/wordpress/             Adapter: client, queries, fragments, adapter.ts, tags

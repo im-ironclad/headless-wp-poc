@@ -2,29 +2,34 @@
 
 We follow **one Block Type (Hero)** through every layer. Every other Block Type works the same way.
 
-## 1. Definition: `wordpress/web/wp-content/mu-plugins/page-builder-fields.php`
+## 1. Definition: SCF → Field Groups → Page Builder
 
-```php
-acf_add_local_field_group([
-  'key'    => 'group_page_builder',
-  'fields' => [[
-    'key'  => 'field_pb_blocks', 'name' => 'blocks', 'type' => 'flexible_content',
-    'layouts' => [
-      'layout_hero' => ['name' => 'hero', 'label' => 'Hero', 'sub_fields' => [
-        ['key' => 'field_hero_heading', 'name' => 'heading', 'type' => 'text', 'required' => 1],
-        ['key' => 'field_hero_image',   'name' => 'image',   'type' => 'image'],
-        ['key' => 'field_hero_cta',     'name' => 'cta',     'type' => 'link'],
-        …
-  ]]]]],
-  'location'           => [[['param' => 'post_type', 'operator' => '==', 'value' => 'page']]],
-  'show_in_graphql'    => 1,
-  'graphql_field_name' => 'pageBuilder',
-]);
+Built in the wp-admin UI (on a local site). SCF writes every save to **Local JSON**:
+`wordpress/web/wp-content/themes/headless/acf-json/group_page_builder.json`, which is committed.
+
+```jsonc
+{
+  "key": "group_page_builder",
+  "fields": [{
+    "key": "field_pb_blocks", "name": "blocks", "type": "flexible_content",
+    "layouts": {
+      "layout_hero": { "name": "hero", "label": "Hero", "sub_fields": [
+        { "key": "field_hero_heading", "name": "heading", "type": "text", "required": 1 },
+        { "key": "field_hero_image",   "name": "image",   "type": "image" },
+        { "key": "field_hero_cta",     "name": "cta",     "type": "link" }, …
+  ]}}}],
+  "location": [[{ "param": "post_type", "operator": "==", "value": "page" }]],
+  "show_in_graphql": 1,
+  "graphql_field_name": "pageBuilder",
+  "modified": 1790823245
+}
 ```
 
-- **Registered in PHP, not in the wp-admin UI.** Groups created in the UI live in the database, so they can't be code-reviewed or deployed. The alternatives are ACF **Local JSON** (the UI writes JSON files you commit) or PHP like this. Groups registered in PHP show up in the editor but not in the field-group UI.
-- `key`s must be globally unique and never change. ACF stores them next to every value.
-- `show_in_graphql` + `graphql_field_name` are the only things WPGraphQL for ACF needs.
+- **Local JSON workflow (the usual agency setup).** Edit the field group in SCF locally → SCF rewrites the JSON → commit it. On another environment, SCF reads the JSON on every request (so the fields work straight away), and shows **Sync available** to import it into that database. `setup.sh` does that import with `sync-acf-json.php`. The SCF admin is hidden outside `local` (`headless-config.php`) so nobody edits the schema on production, where the change would be overwritten by the next deploy.
+- **The alternative: PHP registration** (`acf_add_local_field_group([...])` in a plugin). It's fully code-reviewed and can be generated programmatically, but the groups never appear in SCF → Field Groups, which confuses editors and anyone exploring wp-admin. Agencies use it for fields that are built in code (e.g. shared field sets reused across plugins).
+- `key`s must be globally unique and never change. ACF stores them next to every value. Changing a `name` orphans existing content.
+- `show_in_graphql` + `graphql_field_name` (the **GraphQL** tab in the field group settings) are the only things WPGraphQL for ACF needs.
+- The **Site Settings** Options Page is Local JSON too (`ui_options_page_site_settings.json`), listed under SCF → Options Pages.
 
 ## 2. Editing: wp-admin → Pages → Home
 
@@ -101,7 +106,7 @@ blocks.map((block) => <Component key={block.id} {...block} />)
 
 ## Adding a new Block Type (checklist)
 
-1. **PHP:** add a Layout in `page-builder-fields.php`.
+1. **SCF (local):** add a Layout to the Page Builder field group and commit the updated `acf-json/group_page_builder.json`.
 2. **Types:** add `XBlock` to the `ContentBlock` union in `lib/cms/types.ts`.
 3. **Query:** add a fragment in `fragments/blocks.ts` and spread it in `PAGE_BUILDER`.
 4. **Adapter:** add a `case` (test first in `adapter.test.ts`).

@@ -32,3 +32,8 @@ add_action('after_setup_theme', function () {
 add_action('init', function () {
 	add_post_type_support('page', 'excerpt');
 });
+
+// Field groups are Local JSON (themes/headless/acf-json), edited on a local site and committed.
+// Hide the SCF admin everywhere else, so nobody changes the schema on staging/production
+// where the edit would be lost on the next deploy (Craft: allowAdminChanges = false).
+add_filter('acf/settings/show_admin', fn() => wp_get_environment_type() === 'local');

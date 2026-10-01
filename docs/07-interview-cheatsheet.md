@@ -11,7 +11,7 @@
 - **Editor saves, how fast is the site updated?** On the next request. `acf/save_post` (after ACF writes) → webhook → `revalidateTag`, with a 1h time-based fallback. → doc 04
 - **Preview?** The `preview_post_link` filter → `/api/preview` (secret) → `draftMode()` → fetch `asPreview: true` with Basic auth (Application Password). JWT is the alternative.
 - **Where do globals live?** Menus for navigation (native, links to Pages by ID). ACF Options Pages for everything else.
-- **How is config versioned?** Field groups registered in PHP (or ACF Local JSON), all project code in mu-plugins, plugins pinned via Composer/WPackagist (Bedrock) in real projects, WP-CLI scripts for setup.
+- **How is config versioned?** Field groups as ACF **Local JSON** (built in the UI locally, JSON committed, synced on deploy; SCF admin hidden outside local). PHP registration is the code-only alternative. all project code in mu-plugins, plugins pinned via Composer/WPackagist (Bedrock) in real projects, WP-CLI scripts for setup.
 - **Security?**
   - Sanitize WYSIWYG HTML.
   - Keep secrets server-only.
@@ -46,4 +46,4 @@
 13. The first contract tests asserted seeded content (block order, exact menu) and broke when an editor added a Page. Contract tests should assert *agreement* (schema Layouts ↔ components, every path resolves, links rewritten), not content.
 
 ## Craft ↔ WordPress quick map
-Section → post type · Entry → post/page · Matrix → Flexible Content · Global Set → Options Page · Navigation → Menus · Module → mu-plugin · Events → hooks (actions/filters) · project config → PHP field registration / Local JSON · `craft` → `wp` CLI.
+Section → post type · Entry → post/page · Matrix → Flexible Content · Global Set → Options Page · Navigation → Menus · Module → mu-plugin · Events → hooks (actions/filters) · project config → Local JSON (or PHP field registration) · `craft` → `wp` CLI.

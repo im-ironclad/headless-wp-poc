@@ -28,6 +28,10 @@ ddev wp user get headless-preview >/dev/null 2>&1 || \
 ddev wp user application-password delete headless-preview --all >/dev/null 2>&1 || true
 APP_PASSWORD="$(ddev wp user application-password create headless-preview nextjs-preview --porcelain | tr -d '\r')"
 
+# Field groups + the Site Settings Options Page live in themes/headless/acf-json (Local JSON).
+# Import them into the database so they're listed (and editable) in SCF.
+ddev wp eval-file sync-acf-json.php
+
 ddev wp eval-file seed.php
 
 cat <<ENV
